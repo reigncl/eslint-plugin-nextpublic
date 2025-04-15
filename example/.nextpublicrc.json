@@ -1,0 +1,5 @@
+{
+  "NEXT_PUBLIC_API_URL": "Esta URL es pública porque es necesaria para las llamadas API del cliente",
+  "NEXT_PUBLIC_FEATURE_FLAG": "Esta bandera es pública porque controla características visibles en el cliente",
+  "NEXT_PUBLIC_API_KEY": "Es pública porque no tenemos problemas con compartir la URL, es seguro tenerla en público"
+}
