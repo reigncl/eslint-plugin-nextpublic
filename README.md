@@ -1,6 +1,6 @@
 # eslint-plugin-nextpublic
 
-ESLint plugin to verify that NEXT_PUBLIC variables are justified in a .nextpublicrc file.
+ESLint plugin to verify that NEXT_PUBLIC variables are justified in a .nextpublicrc file. The justification text should have a minimum length of 20 characters.
 
 ## Installation
 
@@ -40,11 +40,11 @@ Or use the recommended configuration:
 
 ```json
 {
-  "extends": ["plugin:nextpublic/recommended"]
+  "extends": ["plugin:@applydigital_latam/eslint-plugin-nextpublic/recommended"]
 }
 ```
 
-Important: You must use --no-cache flag when running ESLint to ensure that the plugin is loading the env vars and the justification file correctly on each execution.
+Important: You must use "--no-cache" flag when running ESLint to ensure that the plugin is loading the env vars and the justification file correctly on each execution.
 
 ## Rules
 

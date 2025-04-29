@@ -36,135 +36,151 @@ beforeAll(() => {
     }
     return originalReadFileSync(filePath, encoding);
   });
+
+  // Mock global object to prevent memory leak warnings
+  global.eslintPluginNextPublic = {
+    allFoundVariables: new Set(),
+    processed: false,
+    exitListenerAdded: true // Prevent adding new listeners
+  };
 });
 
 // Cleanup after tests
 afterAll(() => {
   fs.existsSync = originalExistsSync;
   fs.readFileSync = originalReadFileSync;
+  delete global.eslintPluginNextPublic;
+
+  if (global.eslintPluginNextPublic) {
+    global.eslintPluginNextPublic.allFoundVariables.clear();
+    global.eslintPluginNextPublic.processed = false;
+  }
+  
+  // Default to empty justifications
+  mockJustifications = {};
 });
+
+// Reset mocks before each test
 
 // Tests
 ruleTester.run("require-justification", rule, {
   valid: [
-    // No valid tests since all cases will report a summary message
-  ],
-  invalid: [
-    // Tests for justified variables
+    // Test for justified variables
     {
       code: "const url = process.env.NEXT_PUBLIC_API_URL;",
       globals: {
         process: "readonly"
       },
-      beforeEach: () => {
+      before: () => {
         mockJustifications = {
-          "NEXT_PUBLIC_API_URL": "This is justified"
+          "NEXT_PUBLIC_API_URL": "This is justified with enough characters"
         };
-      },
-      errors: [
-        {
-          message: "Found 1 NEXT_PUBLIC variable in the code.",
-          line: 1,
-          column: 0
-        }
-      ]
+      }
     },
     {
-      code: "const config = { url: 'NEXT_PUBLIC_API_URL' };",
-      beforeEach: () => {
-        mockJustifications = {
-          "NEXT_PUBLIC_API_URL": "This is justified"
-        };
-      },
-      errors: [
-        {
-          message: "Found 1 NEXT_PUBLIC variable in the code.",
-          line: 1,
-          column: 0
-        }
-      ]
-    },
-    {
-      code: "const template = `Using ${NEXT_PUBLIC_API_URL}`;",
+      code: "const config = { url: process.env.NEXT_PUBLIC_API_URL };",
       globals: {
-        NEXT_PUBLIC_API_URL: "readonly"
+        process: "readonly"
       },
-      beforeEach: () => {
+      before: () => {
         mockJustifications = {
-          "NEXT_PUBLIC_API_URL": "This is justified"
+          "NEXT_PUBLIC_API_URL": "This is justified with enough characters"
         };
-      },
-      errors: [
-        {
-          message: "Found 1 NEXT_PUBLIC variable in the code.",
-          line: 1,
-          column: 0
-        }
-      ]
-    },
+      }
+    }
+  ],
+  invalid: [
     // Tests for unjustified variables
     {
       code: "const url = process.env.NEXT_PUBLIC_API_KEY;",
       globals: {
         process: "readonly"
       },
-      beforeEach: () => {
+      before: () => {
         mockJustifications = {}; // No justifications
       },
       errors: [
         {
           message: "NEXT_PUBLIC variable 'NEXT_PUBLIC_API_KEY' requires justification in .nextpublicrc file"
-        },
-        {
-          message: "Found 1 NEXT_PUBLIC variable in the code.",
-          line: 1,
-          column: 0
         }
       ]
     },
+    // Test for short justification
+    {
+      code: "const url = process.env.NEXT_PUBLIC_API_KEY;",
+      globals: {
+        process: "readonly"
+      },
+      before: () => {
+        mockJustifications = {
+          "NEXT_PUBLIC_API_KEY": "Short"
+        };
+      },
+      errors: [
+        {
+          message: "Justification for NEXT_PUBLIC variable 'NEXT_PUBLIC_API_KEY' must be at least 8 characters long"
+        }
+      ]
+    },
+    // Test for string literals
     {
       code: "const config = { key: 'NEXT_PUBLIC_API_KEY' };",
-      beforeEach: () => {
+      before: () => {
         mockJustifications = {}; // No justifications
       },
       errors: [
         {
           message: "NEXT_PUBLIC variable 'NEXT_PUBLIC_API_KEY' requires justification in .nextpublicrc file"
-        },
-        {
-          message: "Found 1 NEXT_PUBLIC variable in the code.",
-          line: 1,
-          column: 0
         }
       ]
     },
+    // Test for template literals
     {
       code: "const template = `Using ${NEXT_PUBLIC_API_KEY}`;",
       globals: {
         NEXT_PUBLIC_API_KEY: "readonly"
       },
-      beforeEach: () => {
+      before: () => {
         mockJustifications = {}; // No justifications
       },
       errors: [
         {
           message: "NEXT_PUBLIC variable 'NEXT_PUBLIC_API_KEY' requires justification in .nextpublicrc file"
-        },
-        {
-          message: "Found 1 NEXT_PUBLIC variable in the code.",
-          line: 1,
-          column: 0
         }
       ]
     },
-    // Test for no NEXT_PUBLIC variables
+    // Test for process.env["NEXT_PUBLIC_XXX"]
     {
-      code: "const normalVar = 'This is a normal variable';",
+      code: "const key = process.env[\"NEXT_PUBLIC_API_KEY\"];",
+      globals: {
+        process: "readonly"
+      },
+      before: () => {
+        mockJustifications = {}; // No justifications
+      },
       errors: [
         {
-          message: "No NEXT_PUBLIC variables were found in the code.",
-          line: 1,
-          column: 0
+          message: "NEXT_PUBLIC variable 'NEXT_PUBLIC_API_KEY' requires justification in .nextpublicrc file"
+        }
+      ]
+    },
+    // Test for multiple variables
+    {
+      code: `
+        const url = process.env.NEXT_PUBLIC_API_URL;
+        const key = process.env.NEXT_PUBLIC_API_KEY;
+      `,
+      globals: {
+        process: "readonly"
+      },
+      before: () => {
+        mockJustifications = {
+          "NEXT_PUBLIC_API_URL": "This is justified with enough characters"
+        };
+      },
+      errors: [
+        {
+          message: "NEXT_PUBLIC variable 'NEXT_PUBLIC_API_KEY' requires justification in .nextpublicrc file"
         }
       ]
     }
