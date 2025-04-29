@@ -10,10 +10,10 @@ First, you need to install [ESLint](https://eslint.org/):
 npm i eslint --save-dev
 ```
 
-Then, install `eslint-plugin-nextpublic`:
+Then, install `@applydigital_latam/eslint-plugin-nextpublic`:
 
 ```bash
-npm install eslint-plugin-nextpublic --save-dev
+npm i -D @applydigital_latam/eslint-plugin-nextpublic
 ```
 
 ## Usage
@@ -22,7 +22,7 @@ Add `nextpublic` to the plugins section in your `.eslintrc` file. You can omit t
 
 ```json
 {
-  "plugins": ["nextpublic"]
+  "plugins": ["@applydigital_latam/eslint-plugin-nextpublic"]
 }
 ```
 
@@ -31,7 +31,7 @@ Then configure the rules you want to use:
 ```json
 {
   "rules": {
-    "nextpublic/require-justification": "error"
+    "@applydigital_latam/eslint-plugin-nextpublic/require-justification": "error"
   }
 }
 ```
@@ -43,6 +43,8 @@ Or use the recommended configuration:
   "extends": ["plugin:nextpublic/recommended"]
 }
 ```
+
+Important: You must use --no-cache flag when running ESLint to ensure that the plugin is loading the env vars and the justification file correctly on each execution.
 
 ## Rules
 

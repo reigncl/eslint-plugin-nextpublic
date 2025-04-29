@@ -10,9 +10,9 @@ module.exports = {
   },
   configs: {
     recommended: {
-      plugins: ["nextpublic"],
+      plugins: ["@applydigital_latam/nextpublic"],
       rules: {
-        "nextpublic/require-justification": "error"
+        "@applydigital_latam/nextpublic/require-justification": "error"
       }
     }
   }

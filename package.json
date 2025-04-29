@@ -1,6 +1,6 @@
 {
-  "name": "eslint-plugin-nextpublic",
-  "version": "1.0.0",
+  "name": "@applydigital_latam/eslint-plugin-nextpublic",
+  "version": "2.0.0",
   "description": "ESLint plugin to check if NEXT_PUBLIC variables are justified in .nextpublicrc file",
   "main": "index.js",
   "keywords": [
@@ -9,7 +9,7 @@
     "nextjs",
     "next-public"
   ],
-  "author": "",
+  "author": "Hans Pina <hans.pina@applydigital.com>",
   "license": "MIT",
   "peerDependencies": {
     "eslint": ">=6.0.0"
