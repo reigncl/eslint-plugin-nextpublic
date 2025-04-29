@@ -1,4 +1,4 @@
-# eslint-plugin-nextpublic
+# @applydigital_latam/eslint-plugin-nextpublic
 
 ESLint plugin to verify that NEXT_PUBLIC variables are justified in a .nextpublicrc file. The justification text should have a minimum length of 20 characters.
 
